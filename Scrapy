@@ -1,0 +1,71 @@
+1) Create Folder name Scrapy_Project
+2) Create one more folder name Amazon
+3) Then go to Anaconda power shell prompt and take the path of the Amazon folder and then cd
+4) Next type scrapy to get help of commands
+5) Type scrapy startproject amazonbooks
+6) Next type cd amazonbooks
+7) Type scrapy genspider amazon_books amazon.in
+8) Open amazon_books, settings.py and items.py in spider
+9) Change start_url to url required to scrape and remove default url
+10) Then go to items.py and type the field of interest to scrape inside class  
+    backpack_name = scrapy.Field()
+    backpack_price = scrapy.Field()
+    backpack_color = scrapy.Field()
+11) Next go to amazon_books.py file and add from ..items import AmazonbooksItem
+12) Before to start_urls add page_number = 2 for multi page scraping
+13) Next inside def (we need to get values to scrape data)
+	items  =  AmazonbooksItem()       
+        book_name = response.css('._2WkVRV::text').extract() # when there are multiple elements then use ('._2WkVRV').css('::text').extract() 
+        book_price = response.css('.._3eWWd-::text').extract()
+        book_color = response.css('..._30jeq3-::text').extract()
+        book_imagelink = response.css('.s-image::attr(src)').extract()
+
+
+        items['book_name'] = book_name
+        items['book_price'] = book_price
+        items['book_color'] = book_color
+        
+        yield items
+
+14) After this add lines for multiple page scraping
+	  next_page = aaaaaaaaa?page = 2?bbbbb to ->>> aaaaa?page=' + str(Amazonspider.page_number) + 'bbbb/ljiii  (Here AmaonSpider is the class name)
+	  if AmazonSpider.page_number <= 10 (10 here can be any page number required)
+		  AmazonSpider.page_number += 1
+		  yield response.follow(next_page, callback = self.parse)
+
+(NOTE: scrapy shell "url" --> we can fetch data from shell like responses
+
+15) Inside settings.py add user_agent = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'or Middleware
+16) Next run scrapy crawl amazon_books
+
+======================================================================================================
+17) To store in csv either run scrapy crawl amazon_books -o amazon.csv else in settings.py file add 
+FEED_FORMAT="csv"
+FEED_URI="aliexpress.csv"
+
+or
+---
+
+Just add in .py the above code (money.csv should be the name written)
+
+custom_settings = {
+        'FEED_URI' : 'tmp/money.csv'
+    }
+=======================================================================================================
+Shell commands
+-------------
+18) scrapy shell "url"
+19) view(response)
+20) print(response.text)
+21) for response.xpath select on item in webpage and inspect elements then right click on class and copy xpath
+ 	response.xpath('//p[has-class("stats-value")]/text()').extract_first()  --> to get just first element
+	response.xpath('/html/body/div[3]/div[2]/div/div[2]/div[1]/div[1]/div[1]/div/div[5]/p[2]/a/text()').extract() -->will get the selected data
+
+==============================================================================================
+2 types of defining class and fetching data
+-------------------------------------------
+response.xpath('//p[@class = "price_color"]/text()').extract()
+response.xpath('//p[has-class("price_color")]/text()').extract()
+response.xpath("//span[contains(@class,'stat')]/span[contains(@class, 'amount-raised')]/text()").extract()
+===============================================================================================
+
